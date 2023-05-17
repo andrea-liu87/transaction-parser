@@ -1,11 +1,12 @@
 package com.andreasgift.transactionsmsparser.di
 
 import android.content.Context
-import android.database.sqlite.SQLiteDatabase
-import androidx.room.Room
-import com.andreasgift.transactionsmsparser.data.SMSDao
-import com.andreasgift.transactionsmsparser.data.SMSDatabase
-import com.andreasgift.transactionsmsparser.data.SMSRepository
+import com.andreasgift.transactionsmsparser.data.SMS.SMSDao
+import com.andreasgift.transactionsmsparser.data.SMS.SMSDatabase
+import com.andreasgift.transactionsmsparser.data.SMS.SMSRepository
+import com.andreasgift.transactionsmsparser.data.transaction.TransactionDao
+import com.andreasgift.transactionsmsparser.data.transaction.TransactionDatabase
+import com.andreasgift.transactionsmsparser.data.transaction.TransactionRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,5 +29,18 @@ class ApplicationModule {
 
     @Provides
     @Singleton
-    fun provideSMSRepository(@ApplicationContext appContext: Context, dao:SMSDao) = SMSRepository(appContext, dao)
+    fun provideSMSRepository(@ApplicationContext appContext: Context, dao: SMSDao) = SMSRepository(appContext, dao)
+
+    @Provides
+    fun provideTransactionDatabase(@ApplicationContext appContext: Context): TransactionDatabase {
+        return TransactionDatabase.getInstance(appContext)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTransactionDao(db: TransactionDatabase): TransactionDao = db.dao
+
+    @Provides
+    @Singleton
+    fun provideTransactionRepository(dao: TransactionDao) = TransactionRepository(dao)
 }

@@ -1,16 +1,11 @@
-package com.andreasgift.transactionsmsparser.data
+package com.andreasgift.transactionsmsparser.data.SMS
 
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 import android.util.Log
-import androidx.lifecycle.viewModelScope
 import com.andreasgift.transactionsmsparser.util.Constant
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*

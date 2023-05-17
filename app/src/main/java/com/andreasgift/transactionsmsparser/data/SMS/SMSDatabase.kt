@@ -1,4 +1,4 @@
-package com.andreasgift.transactionsmsparser.data
+package com.andreasgift.transactionsmsparser.data.SMS
 
 import android.content.Context
 import androidx.room.Database

@@ -2,10 +2,7 @@ package com.andreasgift.transactionsmsparser
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.database.Cursor
-import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -16,21 +13,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
-import com.andreasgift.transactionsmsparser.data.SMS
-import com.andreasgift.transactionsmsparser.data.SMSDatabase
+import com.andreasgift.transactionsmsparser.data.SMS.SMSDatabase
 import com.andreasgift.transactionsmsparser.ui.screen.HomeScreen
-import com.andreasgift.transactionsmsparser.util.Constant.Companion.ADDRESS
-import com.andreasgift.transactionsmsparser.util.Constant.Companion.BODY
-import com.andreasgift.transactionsmsparser.util.Constant.Companion.DATE
-import com.andreasgift.transactionsmsparser.util.Constant.Companion.INBOX
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import live.onedata.vo.tablet.ptt.ui.theme.TransactionParserTheme
-import java.text.ParseException
-import java.text.SimpleDateFormat
-import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint

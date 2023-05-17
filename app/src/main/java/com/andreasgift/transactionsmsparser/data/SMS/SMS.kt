@@ -1,4 +1,4 @@
-package com.andreasgift.transactionsmsparser.data
+package com.andreasgift.transactionsmsparser.data.SMS
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
