@@ -21,5 +21,9 @@ fun HomeScreen(
         items(items = homeUiState.smsList) { sms ->
             Text("${sms.sender}: ${sms.content} on ${sms.date}\n", color = Color.White)
         }
+        items(items = homeUiState.transactionList) {
+            Text("Transaction : " +
+                "${it.date} ${it.currency} ${it.amount} for ${it.merchant}")
+        }
     }
 }

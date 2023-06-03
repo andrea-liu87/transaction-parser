@@ -19,4 +19,4 @@ data class SMS (
 
     @ColumnInfo(Constant.DATE)
     val date: String
-        )
+)

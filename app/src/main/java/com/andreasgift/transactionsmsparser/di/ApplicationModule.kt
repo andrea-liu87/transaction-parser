@@ -1,6 +1,7 @@
 package com.andreasgift.transactionsmsparser.di
 
 import android.content.Context
+import com.andreasgift.transactionparser.TransactionParser
 import com.andreasgift.transactionsmsparser.data.SMS.SMSDao
 import com.andreasgift.transactionsmsparser.data.SMS.SMSDatabase
 import com.andreasgift.transactionsmsparser.data.SMS.SMSRepository
@@ -17,6 +18,10 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 @Module
 class ApplicationModule {
+    @Provides
+    fun transactionParser() : TransactionParser{
+        return TransactionParser()
+    }
 
     @Provides
     fun provideSMSDatabase(@ApplicationContext appContext: Context): SMSDatabase {
@@ -29,7 +34,8 @@ class ApplicationModule {
 
     @Provides
     @Singleton
-    fun provideSMSRepository(@ApplicationContext appContext: Context, dao: SMSDao) = SMSRepository(appContext, dao)
+    fun provideSMSRepository(@ApplicationContext appContext: Context, dao: SMSDao, parser: TransactionParser) =
+        SMSRepository(appContext, dao, parser)
 
     @Provides
     fun provideTransactionDatabase(@ApplicationContext appContext: Context): TransactionDatabase {
@@ -42,5 +48,6 @@ class ApplicationModule {
 
     @Provides
     @Singleton
-    fun provideTransactionRepository(dao: TransactionDao) = TransactionRepository(dao)
+    fun provideTransactionRepository(@ApplicationContext appContext: Context, dao: TransactionDao, parser: TransactionParser)
+    = TransactionRepository(appContext, dao, parser)
 }

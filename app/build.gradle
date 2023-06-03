@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId "com.andreasgift.transactionsmsparser"
-        minSdk 24
+        minSdk 26
         targetSdk 33
         versionCode 1
         versionName "1.0"
@@ -43,6 +43,8 @@ android {
 }
 
 dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':transactionparser')
 
     implementation 'androidx.core:core-ktx:1.10.1'
     implementation 'androidx.appcompat:appcompat:1.6.1'
@@ -70,6 +72,4 @@ dependencies {
     //DI
     implementation "com.google.dagger:hilt-android:2.44.2"
     kapt "com.google.dagger:hilt-android-compiler:2.44.2"
-
-    implementation 'com.google.mlkit:entity-extraction:16.0.0-beta4'
 }

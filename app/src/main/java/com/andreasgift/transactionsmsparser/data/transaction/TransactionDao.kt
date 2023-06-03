@@ -1,7 +1,6 @@
 package com.andreasgift.transactionsmsparser.data.transaction
 
 import androidx.room.*
-import com.andreasgift.transactionsmsparser.data.SMS.SMS
 
 @Dao
 interface TransactionDao {

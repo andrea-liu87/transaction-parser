@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
+import com.andreasgift.transactionparser.TransactionParser
 import com.andreasgift.transactionsmsparser.data.SMS.SMSDatabase
 import com.andreasgift.transactionsmsparser.ui.screen.HomeScreen
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,45 +24,15 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity() {
     val TAG = "TPSMS : MainActivity"
 
-    val REQUIRED_PERMISSIONS = arrayOf(
-            Manifest.permission.READ_SMS
-        )
-
     private val homeViewModel by viewModels<HomeViewModel>()
-    val BankCodes = arrayListOf("Liv", "DBS")
 
     @Inject
-    lateinit var db: SMSDatabase
-
-    private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
-        ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED }
-
-    private val permReqLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-            val granted = permissions.entries.all {
-                it.value
-            }
-            if (granted) {
-                homeViewModel.fetchSMSfromServer(BankCodes)
-            } else {
-                permissions.forEach {
-                        Toast.makeText(
-                            this,
-                            "${it.key} Permissions not granted by the user.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-            }
-        }
+    lateinit var parser:TransactionParser
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        if (allPermissionsGranted()) {
-            homeViewModel.fetchSMSfromServer(BankCodes)
-        } else {
-            permReqLauncher.launch(REQUIRED_PERMISSIONS)
-        }
+        parser.checkPermission(this)
 
         setContent {
             TransactionParserTheme {
