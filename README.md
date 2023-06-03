@@ -5,6 +5,16 @@ Android Library to extract sms from Bank/Credit Card provider into transaction d
 <br>
 
 ## Usage
+Check permission inside activity before usage
+```
+val parser = TransactionParser()
+parser.checkPermission(this@MainActivity)
+```
+
+Fetch all sms content related
+```
+parser.fetchAllSMS(this@MainActivity, arrayListOf("DBS"))
+```
 The return of fetchSms()
 ```
 data class SMS (
