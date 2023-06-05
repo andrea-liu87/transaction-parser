@@ -13,10 +13,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.andreasgift.transactionparser.TransactionParser
-import com.andreasgift.transactionsmsparser.data.SMS.SMSDatabase
 import com.andreasgift.transactionsmsparser.ui.screen.HomeScreen
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import live.onedata.vo.tablet.ptt.ui.theme.TransactionParserTheme
 import javax.inject.Inject
 
@@ -26,12 +29,12 @@ class MainActivity : AppCompatActivity() {
 
     private val homeViewModel by viewModels<HomeViewModel>()
 
-    @Inject
     lateinit var parser:TransactionParser
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        parser = TransactionParser()
         parser.checkPermission(this)
 
         setContent {
@@ -43,6 +46,36 @@ class MainActivity : AppCompatActivity() {
                     HomeScreen(viewModel = homeViewModel)
                 }
             }
+        }
+    }
+
+    fun getLastSms(){
+        val list = parser.fetchLastSms(this, arrayListOf("Liv"), 12)
+        homeViewModel.updateSMSData(list)
+    }
+
+    fun getLastMonthsSms(){
+        val list = parser.fetchLastMonthsSms(this, arrayListOf("Liv"), 3)
+        homeViewModel.updateSMSData(list)
+    }
+
+    fun getLastTransactions(){
+        CoroutineScope(Dispatchers.IO).launch {
+            parser.fetchLastTransactions(
+                this@MainActivity,
+                arrayListOf("Liv"),
+                {homeViewModel.updateTransactions(it)},
+            12)
+        }
+    }
+
+    fun getLastMonthsTransactions(){
+        CoroutineScope(Dispatchers.IO).launch {
+            parser.fetchTransactionsLastMonthsOf(
+                this@MainActivity,
+                arrayListOf("Liv"),
+                {homeViewModel.updateTransactions(it)},
+                3)
         }
     }
 }

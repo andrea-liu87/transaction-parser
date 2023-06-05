@@ -14,6 +14,7 @@ import com.andreasgift.transactionparser.model.Transaction
 import com.andreasgift.transactionparser.model.TransactionType
 import com.google.mlkit.nl.entityextraction.*
 import kotlinx.coroutines.*
+import java.text.SimpleDateFormat
 import java.util.*
 
 class TransactionParser {
@@ -76,6 +77,101 @@ class TransactionParser {
     }
 
     /**
+     * Fetch last [noOfSms] sms content that related to the transactions based on the list of [bankCodes].
+     * User need to determine the transactions by SMS sender as input in [bankCodes]
+     */
+    fun fetchLastSms(context: Context, bankCodes: List<String>, noOfSms: Int) : List<SMS> {
+        val smsList = arrayListOf<SMS>()
+
+        val cursor: Cursor? =
+            context.contentResolver.query(Uri.parse(Constant.INBOX), null, null, null, null)
+
+        if (cursor != null) {
+            val colSender = cursor.getColumnIndex(Constant.ADDRESS)
+            val colDate = cursor.getColumnIndex(Constant.DATE)
+            val colMessage = cursor.getColumnIndex(Constant.BODY)
+
+            if (cursor.moveToFirst()) {
+                do {
+                    val content = cursor.getString(colMessage)
+                    val sender = cursor.getString(colSender)
+                    val date = cursor.getString(colDate)
+
+                    if (bankCodes.map { it.lowercase() }.any { code ->
+                            sender.lowercase().contains(code)
+                        }) {
+
+                        val dateSms = Util.parsingDateFromLong(date.toLong())
+                        smsList.add(SMS(
+                            cursor.getString(0).toInt(),
+                            sender,
+                            content,
+                            dateSms
+                        )
+                        )
+                        Log.d(TAG, "from: $sender, content: $content on $dateSms")
+                    }
+                } while (cursor.moveToNext() && smsList.size < noOfSms)
+            } else {
+                Log.d(TAG, "inbox is empty")
+            }
+        }
+        return smsList
+    }
+
+    /**
+     * Fetch sms content that related to the transactions based on the list of [bankCodes]
+     * for the last [noOfMonths] months (including this months).
+     * User need to determine the transactions by SMS sender as input in [bankCodes]
+     */
+    fun fetchLastMonthsSms(context: Context, bankCodes: List<String>, noOfMonths: Int) : List<SMS> {
+        val calendar = GregorianCalendar()
+        calendar.time = Date()
+        calendar.add(Calendar.MONTH, -noOfMonths)
+        val dateFormat = SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH)
+
+        val smsList = arrayListOf<SMS>()
+
+        val cursor: Cursor? =
+            context.contentResolver.query(Uri.parse(Constant.INBOX), null, null, null, null)
+
+        if (cursor != null) {
+            val colSender = cursor.getColumnIndex(Constant.ADDRESS)
+            val colDate = cursor.getColumnIndex(Constant.DATE)
+            val colMessage = cursor.getColumnIndex(Constant.BODY)
+
+            if (cursor.moveToFirst()) {
+                do {
+                    val content = cursor.getString(colMessage)
+                    val sender = cursor.getString(colSender)
+                    val date = cursor.getString(colDate)
+
+                    if (bankCodes.map { it.lowercase() }.any { code ->
+                            sender.lowercase().contains(code)
+                        }) {
+
+                        val dateSms = Util.parsingDateFromLong(date.toLong())
+                        if (dateFormat.parse(dateSms)!! > calendar.time) {
+                            smsList.add(
+                                SMS(
+                                    cursor.getString(0).toInt(),
+                                    sender,
+                                    content,
+                                    dateSms
+                                )
+                            )
+                            Log.d(TAG, "from: $sender, content: $content on $dateSms")
+                        }
+                    }
+                } while (cursor.moveToNext())
+            } else {
+                Log.d(TAG, "inbox is empty")
+            }
+        }
+        return smsList
+    }
+
+    /**
      * Fetch all transactions based on the list of [bankCodes].
      * User need to determine the transactions by SMS sender as input in [bankCodes]
      */
@@ -94,8 +190,20 @@ class TransactionParser {
      * Fetch all transactions from the last of [noOfMonths] months, based on the list of [bankCodes].
      * User need to determine the transactions by SMS sender as input in [bankCodes]
      */
-    fun fetchTransactionsLastMonthsOf(noOfMonths: Int){
-
+    fun fetchTransactionsLastMonthsOf(
+        context: Context,
+        bankCodes: List<String>,
+        successListener: (List<Transaction>) -> Unit,
+        noOfMonths: Int
+    ){
+        val smsList = fetchLastMonthsSms(context, bankCodes, noOfMonths)
+        CoroutineScope(Dispatchers.IO).launch {
+            val transactionList = parseTransactions(smsList)
+            withContext(Dispatchers.Main){
+                successListener(transactionList)
+                Log.d(TAG, "parsing all transaction is finished")
+            }
+        }
     }
 
     /**
@@ -209,36 +317,6 @@ class TransactionParser {
                     res.complete(null)
                 }
             }
-
-//        withContext(Dispatchers.Main) {
-//            if (task.isComplete) {
-//                for (entityAnnotation in task.result){
-//                    val entitites = entityAnnotation.entities
-//                    for (entity in entitites){
-//                        if (entity is MoneyEntity) {
-//                            var amount = entity.integerPart.toDouble()
-//                            val fracPart: Double = if (entity.fractionalPart.toDouble() > 10) {
-//                                (entity.fractionalPart.toDouble() / 100)
-//                            } else if (entity.fractionalPart == 0) {
-//                                0.0
-//                            } else {
-//                                (entity.fractionalPart.toDouble() / 10)
-//                            }
-//                            amount += fracPart
-//                            amountList.add(amount)
-//                        }
-//                    }
-//                    if (amountList.isNotEmpty()) {
-//                        val transaction =
-//                            Transaction(id, amountList[0], currency, type, date, source, merchant)
-//                        Log.d(TAG, "detect amount : $amountList")
-//                        res.complete(transaction)
-//                    } else {
-//                        res.complete(null)
-//                    }
-//                }
-//            }
-//        }
         return res.await()
     }
 
