@@ -4,6 +4,24 @@ Android Library to extract sms from Bank/Credit Card provider into transaction d
 </p>
 <br>
 
+## Including in your project
+Add it in your root build.gradle at the end of repositories on your gradle file:
+```Gradle
+allprojects {
+	repositories {
+	...
+	maven { url 'https://jitpack.io' }
+	}
+}
+```
+
+Next, add the dependency below to your **module**'s `build.gradle` file:
+```gradle
+dependencies {
+	implementation 'com.github.andrea-liu87:transaction-parser:<version-name>'
+}
+```
+
 ## Usage
 Check permission inside activity before usage
 ```
