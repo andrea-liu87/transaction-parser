@@ -15,6 +15,15 @@ Fetch all sms content related
 ```
 parser.fetchAllSMS(this@MainActivity, arrayListOf("DBS"))
 ```
+Fetch last 12 sms content related
+```
+parser.fetchLastSms(this, arrayListOf("Liv"), 12)
+```
+Fetch last 3 months content related
+```
+parser.fetchLastMonthsSms(this, arrayListOf("Liv"), 3)
+```
+
 The return of fetchSms()
 ```
 data class SMS (
@@ -24,6 +33,31 @@ data class SMS (
     val date: String
 )
  ```
+ <br>
+
+ Fetch all transaction
+```
+parser.fetchAllTransactions(
+                this@MainActivity,
+                arrayListOf("Liv"),
+                {homeViewModel.updateTransactions(it)})
+```
+Fetch last 12 transactions
+```
+parser.fetchLastTransactions(
+                this@MainActivity,
+                arrayListOf("Liv"),
+                {homeViewModel.updateTransactions(it)},
+            12)
+```
+Fetch last 3 months transactions
+```
+parser.fetchTransactionsLastMonthsOf(
+                this@MainActivity,
+                arrayListOf("Liv"),
+                {homeViewModel.updateTransactions(it)},
+                3)
+```
 
 The return for fetchTransactions()
 ```
