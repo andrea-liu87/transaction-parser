@@ -20,7 +20,6 @@ data class HomeUiState(
     val transactionList: List<Transaction> = arrayListOf()
 )
 
-@HiltViewModel
 class HomeViewModel : ViewModel() {
     private val TAG = "TPSMS: ViewModel"
 

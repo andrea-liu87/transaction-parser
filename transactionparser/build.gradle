@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    id 'maven-publish'
 }
 
 android {
@@ -46,4 +47,18 @@ dependencies {
     implementation "androidx.work:work-runtime-ktx:2.8.1"
     implementation "androidx.work:work-rxjava2:2.8.1"
     implementation "androidx.work:work-multiprocess:2.8.1"
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            // Creates a Maven publication called "release".
+            release(MavenPublication) {
+                from components.release
+                groupId = 'com.github.andrea-liu87'
+                artifactId = 'transaction-parser'
+                version = '0.0.0'
+            }
+        }
+    }
 }
